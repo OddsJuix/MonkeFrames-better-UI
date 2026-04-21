@@ -11,16 +11,17 @@ namespace MonkeFrames.Editor.Utilities;
 
 public static class SaveUtilities
 {
+    private static Dictionary<string, Project> _loadableProjects;
     public static Dictionary<string, Project> LoadableProjects
     {
         get {
-            if (field == null)
-                field = GetProjects();
+            if (_loadableProjects == null)
+                _loadableProjects = GetProjects();
 
-            return field;
+            return _loadableProjects;
         }
         
-        set => field = value;
+        set => _loadableProjects = value;
     }
 
     private static bool IsValidJson(string json) {

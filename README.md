@@ -1,7 +1,9 @@
 <h1 id="readme"><img src="/MonkeFrames.Editor/Resources/MFtitleWhite.png" height=200></h1>
 
 # What I added to MonkeFrames
-I made this 10x better by simply adding better UI and more customization for users.
+I made this 10x better by simply adding better UI and more customization for users.. thats pretty much it, enjoy your use of this remake of the mod!
+
+# What is MonkeFrames?
 
 MonkeFrames is a keyframe-based camera animator loosely based on the Orion Drift spectator view that allows you to plan out camera movements with transitions for each property.
 

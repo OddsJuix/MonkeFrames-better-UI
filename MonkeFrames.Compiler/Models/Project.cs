@@ -33,11 +33,12 @@ public class Project
     /// <summary>
     /// FPS of the project. Can be either 30 or 60.
     /// </summary>
+    private int _fps = 30;
     public int FPS {
-        get => field;
+        get => _fps;
         set {
             if (value is 30 or 60 or 120)
-                field = value;
+                _fps = value;
             else
                 throw new ArgumentException("FPS must be either 30, 60, or 120.", nameof(value));
         }
