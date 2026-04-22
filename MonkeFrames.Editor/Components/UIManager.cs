@@ -149,16 +149,39 @@ public class UIManager : MonoBehaviour
             left.padding.left = 10;
         }
 
-        // Apply UI settings
-        Color textColor = new Color(textColorR, textColorG, textColorB);
-        GUI.skin.label.normal.textColor = textColor;
-        GUI.skin.button.normal.textColor = textColor;
-        GUI.skin.toggle.normal.textColor = textColor;
-        GUI.skin.textField.normal.textColor = textColor;
+        // Create modern UI styles inspired by cyberpunk aesthetic
+        GUIStyle modernButton = new GUIStyle(GUI.skin.button)
+        {
+            alignment = TextAnchor.MiddleCenter,
+            fontSize = 11,
+            fontStyle = FontStyle.Bold,
+            padding = new RectOffset(12, 12, 6, 6),
+            border = new RectOffset(2, 2, 2, 2)
+        };
+        modernButton.normal.textColor = new Color(1f, 1f, 1f, 1f);
+        modernButton.normal.background = CreateSolidTexture(new Color(0.15f, 0.05f, 0.25f, 1f)); // Dark purple
+        modernButton.hover.textColor = new Color(1f, 1f, 1f, 1f);
+        modernButton.hover.background = CreateSolidTexture(new Color(0.3f, 0.1f, 0.5f, 1f)); // Brighter purple
+        modernButton.active.textColor = new Color(0.8f, 0.2f, 1f, 1f);
+        modernButton.active.background = CreateSolidTexture(new Color(0.4f, 0.15f, 0.6f, 1f));
 
-        // For button roundness, perhaps adjust padding or border
-        GUI.skin.button.border = new RectOffset((int)buttonRoundness, (int)buttonRoundness, (int)buttonRoundness, (int)buttonRoundness);
+        GUIStyle modernLabel = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = 11,
+            fontStyle = FontStyle.Normal
+        };
+        modernLabel.normal.textColor = new Color(1f, 1f, 1f, 1f);
 
+        GUIStyle modernBox = new GUIStyle(GUI.skin.box)
+        {
+            padding = new RectOffset(15, 15, 15, 15),
+            border = new RectOffset(2, 2, 2, 2)
+        };
+        modernBox.normal.background = CreateSolidTexture(new Color(0.08f, 0.08f, 0.12f, 0.95f)); // Very dark
+
+        // Top menu bar with modern styling
+        GUI.backgroundColor = new Color(0.1f, 0.1f, 0.15f, 1f);
+        
         if (Menu(Keyboard.current.f1Key, "MonkeFrames", 0, primaryButton))
             MenuTo(CurrentMenu.F1);
 
@@ -179,13 +202,16 @@ public class UIManager : MonoBehaviour
 
         if (menu == CurrentMenu.F1)
         {
-            if (GUI.Button(new Rect(0, 20, 300, 20), "Disable (F1 to enable)", left))
+            float menuX = 0;
+            float menuY = 20;
+            
+            if (GUI.Button(new Rect(menuX, menuY, 300, 20), "Disable (F1 to enable)", modernButton))
             {
                 CameraManager.Instance.SetModEnabled(false);
                 menu = CurrentMenu.Closed;
             }
 
-            if (GUI.Button(new Rect(0, 40, 300, 20), "Source (GitHub)", left))
+            if (GUI.Button(new Rect(menuX, menuY + 25, 300, 20), "Source (GitHub)", modernButton))
             {
                 Process.Start(new ProcessStartInfo
                 {
@@ -195,48 +221,48 @@ public class UIManager : MonoBehaviour
                 menu = CurrentMenu.Closed;
             }
 
-            GUI.Button(new Rect(0, 60, 300, 20), $"v{Constants.VersionID}");
+            GUI.Label(new Rect(menuX, menuY + 50, 300, 20), $"v{Constants.VersionID}", modernLabel);
         }
 
         if (menu is CurrentMenu.F2 or CurrentMenu.F2LoadMenu)
         {
             const float start = 150f;
 
-            if (GUI.Button(new Rect(start, 20, 300, 20), "Keyframe Editor", left))
+            if (GUI.Button(new Rect(start, 20, 300, 20), "Keyframe Editor", modernButton))
             {
                 ShowingEditorUI = !ShowingEditorUI;
                 menu = CurrentMenu.Closed;
             }
 
-            if (GUI.Button(new Rect(start, 40, 300, 20), "Code Joiner", left))
+            if (GUI.Button(new Rect(start, 45, 300, 20), "Code Joiner", modernButton))
             {
                 ShowingJoinerUI = !ShowingJoinerUI;
                 menu = CurrentMenu.Closed;
             }
 
-            if (GUI.Button(new Rect(start, 60, 300, 20), "Load Map", left))
+            if (GUI.Button(new Rect(start, 70, 300, 20), "Load Map", modernButton))
             {
                 menu = (menu == CurrentMenu.F2LoadMenu ? CurrentMenu.F2 : CurrentMenu.F2LoadMenu);
             }
 
             if (menu == CurrentMenu.F2LoadMenu)
             {
-                int startY = 60;
+                int startY = 70;
 
                 foreach (MapData map in MapLoader.maps)
                 {
-                    if (GUI.Button(new Rect(start + 300, startY, 300, 20), map.Name, left))
+                    if (GUI.Button(new Rect(start + 300, startY, 300, 20), map.Name, modernButton))
                     {
                         MapLoader.Load(map);
                         menu = CurrentMenu.Closed;
                     }
 
-                    startY += 20;
+                    startY += 25;
                 }
             }
 
 #if DEBUG
-            if (GUI.Button(new Rect(start, 80, 300, 20), "Diagnostics", left))
+            if (GUI.Button(new Rect(start, 95, 300, 20), "Diagnostics", modernButton))
             {
                 ShowingCompilerUI = !ShowingCompilerUI;
                 menu = CurrentMenu.Closed;
@@ -249,7 +275,7 @@ public class UIManager : MonoBehaviour
         {
             const float start = 250f;
 
-            if (GUI.Button(new Rect(start, 20, 300, 20), "To Selected Keyframe", left) && SelectedKeyframeIndex != -1)
+            if (GUI.Button(new Rect(start, 20, 300, 20), "To Selected Keyframe", modernButton) && SelectedKeyframeIndex != -1)
             {
                 GoToSelectedKeyframe();
                 menu = CurrentMenu.Closed;
@@ -257,7 +283,7 @@ public class UIManager : MonoBehaviour
                 CurrentStatus = $"Moved to Keyframe";
             }
 
-            if (GUI.Button(new Rect(start, 40, 300, 20), "To Monke", left))
+            if (GUI.Button(new Rect(start, 45, 300, 20), "To Monke", modernButton))
             {
                 Vector3 headPos = GorillaTagger.Instance.headCollider.transform.position;
                 Vector3 headRot = GorillaTagger.Instance.headCollider.transform.rotation.eulerAngles;
@@ -279,7 +305,7 @@ public class UIManager : MonoBehaviour
 
             AllowKeybinds = GUI.GetNameOfFocusedControl() != "projectName";
 
-            if (GUI.Button(new Rect(start, 40, 300, 20), $"FPS: {KeyframeManager.Instance.Project.FPS}", left))
+            if (GUI.Button(new Rect(start, 45, 300, 20), $"FPS: {KeyframeManager.Instance.Project.FPS}", modernButton))
             {
                 if (KeyframeManager.Instance.Project.FPS == 30)
                     KeyframeManager.Instance.Project.FPS = 60;
@@ -289,25 +315,25 @@ public class UIManager : MonoBehaviour
                     KeyframeManager.Instance.Project.FPS = 30;
             }
 
-            if (GUI.Button(new Rect(start, 60, 300, 20), $"Load Project", left))
+            if (GUI.Button(new Rect(start, 70, 300, 20), $"Load Project", modernButton))
             {
                 menu = (menu == CurrentMenu.F4LoadMenu ? CurrentMenu.F4 : CurrentMenu.F4LoadMenu);
             }
 
-            if (GUI.Button(new Rect(start, 80, 300, 20), $"Save Project", left))
+            if (GUI.Button(new Rect(start, 95, 300, 20), $"Save Project", modernButton))
             {
                 menu = CurrentMenu.Closed;
                 SaveUtilities.Save();
                 CurrentStatus = $"Saved project {KeyframeManager.Instance.Project.Name}";
             }
 
-            if (GUI.Button(new Rect(start, 100, 300, 20), $"Compile", left))
+            if (GUI.Button(new Rect(start, 120, 300, 20), $"Compile", modernButton))
             {
                 menu = CurrentMenu.Closed;
                 KeyframeManager.Instance.StartBuild();
             }
 
-            if (GUI.Button(new Rect(start, 120, 300, 20), $"Compile & Play", left))
+            if (GUI.Button(new Rect(start, 145, 300, 20), $"Compile & Play", modernButton))
             {
                 menu = CurrentMenu.Closed;
                 KeyframeManager.Instance.StartBuildAndRun();
@@ -320,19 +346,19 @@ public class UIManager : MonoBehaviour
             float startY = 60f;
             
             if (SaveUtilities.LoadableProjects.Count == 0) {
-                GUI.Button(new Rect(startX, startY, 300, 20), $"no projects to load (save one first)", left);
+                GUI.Label(new Rect(startX, startY, 300, 20), $"no projects to load (save one first)", modernLabel);
             } else {
                 float i = startY;
 
                 foreach (KeyValuePair<string, Project> set in SaveUtilities.LoadableProjects)
                 {
-                    if (GUI.Button(new Rect(startX, i, 300, 20), set.Key, left))
+                    if (GUI.Button(new Rect(startX, i, 300, 20), set.Key, modernButton))
                     {
                         menu = CurrentMenu.Closed;
                         KeyframeManager.Instance.LoadProject(set.Value);
                     }
 
-                    i += 20;
+                    i += 25;
                 }
             }
         }
@@ -340,25 +366,25 @@ public class UIManager : MonoBehaviour
         if (menu == CurrentMenu.F5)
         {
             const float start = 450f;
-            if (GUI.Button(new Rect(start, 20, 300, 20), "Create New", left))
+            if (GUI.Button(new Rect(start, 20, 300, 20), "Create New", modernButton))
             {
                 KeyframeManager.Instance.CreateKeyframe();
                 menu = CurrentMenu.Closed;
             }
 
-            if (GUI.Button(new Rect(start, 40, 300, 20), "Create New towards Monke", left))
+            if (GUI.Button(new Rect(start, 45, 300, 20), "Create New towards Monke", modernButton))
             {
                 KeyframeManager.Instance.CreateKeyframe(lookAtPlayer: true);
                 menu = CurrentMenu.Closed;
             }
 
-            if (GUI.Button(new Rect(start, 60, 300, 20), "Replace Selection with New", left) && SelectedKeyframeIndex != -1)
+            if (GUI.Button(new Rect(start, 70, 300, 20), "Replace Selection with New", modernButton) && SelectedKeyframeIndex != -1)
             {
                 KeyframeManager.Instance.CreateKeyframe(replaceKeyframeIdx: SelectedKeyframeIndex);
                 menu = CurrentMenu.Closed;
             }
 
-            if (GUI.Button(new Rect(start, 80, 300, 20), "Delete Selection", left) && SelectedKeyframeIndex != -1)
+            if (GUI.Button(new Rect(start, 95, 300, 20), "Delete Selection", modernButton) && SelectedKeyframeIndex != -1)
             {
                 KeyframeManager.Instance.DeleteKeyframe(SelectedKeyframeIndex);
                 menu = CurrentMenu.Closed;
@@ -369,19 +395,19 @@ public class UIManager : MonoBehaviour
         {
             const float start = 550f;
 
-            GUI.Label(new Rect(start, 20, 100, 20), "Text Color R:");
+            GUI.Label(new Rect(start, 20, 100, 20), "Text Color R:", modernLabel);
             textColorR = GUI.HorizontalSlider(new Rect(start + 100, 20, 100, 20), textColorR, 0f, 1f);
 
-            GUI.Label(new Rect(start, 40, 100, 20), "Text Color G:");
+            GUI.Label(new Rect(start, 40, 100, 20), "Text Color G:", modernLabel);
             textColorG = GUI.HorizontalSlider(new Rect(start + 100, 40, 100, 20), textColorG, 0f, 1f);
 
-            GUI.Label(new Rect(start, 60, 100, 20), "Text Color B:");
+            GUI.Label(new Rect(start, 60, 100, 20), "Text Color B:", modernLabel);
             textColorB = GUI.HorizontalSlider(new Rect(start + 100, 60, 100, 20), textColorB, 0f, 1f);
 
-            GUI.Label(new Rect(start, 80, 100, 20), "Button Roundness:");
+            GUI.Label(new Rect(start, 80, 100, 20), "Button Roundness:", modernLabel);
             buttonRoundness = GUI.HorizontalSlider(new Rect(start + 100, 80, 100, 20), buttonRoundness, 0f, 10f);
 
-            if (GUI.Button(new Rect(start, 100, 200, 20), "Save Settings", left))
+            if (GUI.Button(new Rect(start, 100, 200, 20), "Save Settings", modernButton))
             {
                 PlayerPrefs.SetFloat("MonkeFrames_TextColorR", textColorR);
                 PlayerPrefs.SetFloat("MonkeFrames_TextColorG", textColorG);
@@ -398,25 +424,26 @@ public class UIManager : MonoBehaviour
         if (!ShowingUI)
             return;
 
-        // Status bar
-        GUI.Label(new Rect(10, ScreenDimensions.y - 30, ScreenDimensions.x - 20, 20), CurrentStatus);
+        // Status bar with modern styling
+        GUI.Label(new Rect(10, ScreenDimensions.y - 30, ScreenDimensions.x - 20, 20), CurrentStatus, modernLabel);
 
         if (ShowingJoinerUI)
         {
             float x = 10f;
             float y = 100f;
 
-            GUI.Box(new Rect(x, y, 300, 290), "");
+            GUI.Box(new Rect(x, y, 300, 290), "", modernBox);
 
             GUI.DrawTexture(new Rect(x + 10, y + 5, 35, 35), titlebarIcon);
             GUI.Label(
-                new Rect(x + 60, y + 15, KeyframeWindowSize.x - 65, 29),
-                "Room Joiner"
+                new Rect(x + 60, y + 15, 300 - 65, 29),
+                "Room Joiner",
+                modernLabel
             );
 
             roomName = GUI.TextField(new Rect(x + 10, y + 50, 280, 20), roomName);
 
-            if (GUI.Button(new Rect(x + 100, y + 80, 100, 20), "Join"))
+            if (GUI.Button(new Rect(x + 100, y + 80, 100, 20), "Join", modernButton))
                 JoinRoom(roomName);
         }
 
@@ -425,24 +452,22 @@ public class UIManager : MonoBehaviour
             float x = 10f;
             float y = ScreenDimensions.y - 300;
 
-            GUI.Box(new Rect(x, y, 300, 290), "");
+            GUI.Box(new Rect(x, y, 300, 290), "", modernBox);
 
             // Titlebar
             GUI.DrawTexture(new Rect(x + 10, y + 5, 35, 35), titlebarIcon);
             GUI.Label(
-                new Rect(x + 60, y + 15, KeyframeWindowSize.x - 65, 29),
-                "MonkeFrames.Compiler Diagnostics"
+                new Rect(x + 60, y + 15, 300 - 65, 29),
+                "Compiler Diagnostics",
+                modernLabel
             );
 
             if (!KeyframeManager.Instance.Project.IsCompiled) {
-                GUIStyle centeredStyle = new GUIStyle(GUI.skin.label);
-                centeredStyle.alignment = TextAnchor.MiddleCenter;
-
-                GUI.Label(new Rect(x + 10, y + 50, 280, 20), "Compile the project first.", centeredStyle);
+                GUI.Label(new Rect(x + 10, y + 50, 280, 20), "Compile the project first.", modernLabel);
             } else
             {
-                GUI.Label(new Rect(x + 10, y + 50, 280, 20), $"made Frames: {KeyframeManager.Instance.Project.CompiledKeyframes.Count}");
-                GUI.Label(new Rect(x + 10, y + 70, 280, 20), $"at      FPS: {KeyframeManager.Instance.Project.FPS}");
+                GUI.Label(new Rect(x + 10, y + 50, 280, 20), $"Frames: {KeyframeManager.Instance.Project.CompiledKeyframes.Count}", modernLabel);
+                GUI.Label(new Rect(x + 10, y + 70, 280, 20), $"FPS: {KeyframeManager.Instance.Project.FPS}", modernLabel);
             }
         }
 
@@ -451,13 +476,14 @@ public class UIManager : MonoBehaviour
             float x = ScreenDimensions.x - KeyframeWindowSize.x - 20;
             float y = 20f;
     
-            GUI.Box(new Rect(x, y, KeyframeWindowSize.x, KeyframeWindowSize.y), "");
+            GUI.Box(new Rect(x, y, KeyframeWindowSize.x, KeyframeWindowSize.y), "", modernBox);
 
             // Titlebar
             GUI.DrawTexture(new Rect(x + 10, y + 5, 40, 40), titlebarIcon);
             GUI.Label(
                 new Rect(x + 55, y + 15, KeyframeWindowSize.x - 65, 29),
-                "Keyframe Editor"
+                "Keyframe Editor",
+                modernLabel
             );
 
             // Start keyframes list
@@ -551,6 +577,15 @@ public class UIManager : MonoBehaviour
             return newValue;
            
         return field;
+    }
+
+    // Helper method to create solid color textures for UI styling
+    private Texture2D CreateSolidTexture(Color color)
+    {
+        Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+        texture.SetPixel(0, 0, color);
+        texture.Apply();
+        return texture;
     }
 
     private enum CurrentMenu
