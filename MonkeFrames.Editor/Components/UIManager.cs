@@ -39,6 +39,16 @@ public class UIManager : MonoBehaviour
     public static float textColorG = 1f;
     public static float textColorB = 1f;
     public static float buttonRoundness = 0f;
+    
+    public static float buttonColorR = 0.15f;
+    public static float buttonColorG = 0.05f;
+    public static float buttonColorB = 0.25f;
+    public static float buttonHoverR = 0.3f;
+    public static float buttonHoverG = 0.1f;
+    public static float buttonHoverB = 0.5f;
+    public static float buttonOpacity = 1f;
+    public static float buttonFontSize = 11f;
+    public static float buttonBorder = 2f;
 
     public UIManager()
     {
@@ -57,11 +67,20 @@ public class UIManager : MonoBehaviour
 
         titlebarIcon = UnityUtilities.CreateTexture(iconData);
 
-        // Load UI settings
         textColorR = PlayerPrefs.GetFloat("MonkeFrames_TextColorR", 1f);
         textColorG = PlayerPrefs.GetFloat("MonkeFrames_TextColorG", 1f);
         textColorB = PlayerPrefs.GetFloat("MonkeFrames_TextColorB", 1f);
         buttonRoundness = PlayerPrefs.GetFloat("MonkeFrames_ButtonRoundness", 0f);
+        
+        buttonColorR = PlayerPrefs.GetFloat("MonkeFrames_ButtonColorR", 0.15f);
+        buttonColorG = PlayerPrefs.GetFloat("MonkeFrames_ButtonColorG", 0.05f);
+        buttonColorB = PlayerPrefs.GetFloat("MonkeFrames_ButtonColorB", 0.25f);
+        buttonHoverR = PlayerPrefs.GetFloat("MonkeFrames_ButtonHoverR", 0.3f);
+        buttonHoverG = PlayerPrefs.GetFloat("MonkeFrames_ButtonHoverG", 0.1f);
+        buttonHoverB = PlayerPrefs.GetFloat("MonkeFrames_ButtonHoverB", 0.5f);
+        buttonOpacity = PlayerPrefs.GetFloat("MonkeFrames_ButtonOpacity", 1f);
+        buttonFontSize = PlayerPrefs.GetFloat("MonkeFrames_ButtonFontSize", 11f);
+        buttonBorder = PlayerPrefs.GetFloat("MonkeFrames_ButtonBorder", 2f);
 
         Debug.Log("[MonkeFrames::UIManager] UI manager is running");
     }
@@ -153,17 +172,17 @@ public class UIManager : MonoBehaviour
         GUIStyle modernButton = new GUIStyle(GUI.skin.button)
         {
             alignment = TextAnchor.MiddleCenter,
-            fontSize = 11,
+            fontSize = (int)buttonFontSize,
             fontStyle = FontStyle.Bold,
             padding = new RectOffset(12, 12, 6, 6),
-            border = new RectOffset(2, 2, 2, 2)
+            border = new RectOffset((int)buttonBorder, (int)buttonBorder, (int)buttonBorder, (int)buttonBorder)
         };
         modernButton.normal.textColor = new Color(1f, 1f, 1f, 1f);
-        modernButton.normal.background = CreateSolidTexture(new Color(0.15f, 0.05f, 0.25f, 1f)); // Dark purple
+        modernButton.normal.background = CreateSolidTexture(new Color(buttonColorR, buttonColorG, buttonColorB, buttonOpacity));
         modernButton.hover.textColor = new Color(1f, 1f, 1f, 1f);
-        modernButton.hover.background = CreateSolidTexture(new Color(0.3f, 0.1f, 0.5f, 1f)); // Brighter purple
+        modernButton.hover.background = CreateSolidTexture(new Color(buttonHoverR, buttonHoverG, buttonHoverB, buttonOpacity));
         modernButton.active.textColor = new Color(0.8f, 0.2f, 1f, 1f);
-        modernButton.active.background = CreateSolidTexture(new Color(0.4f, 0.15f, 0.6f, 1f));
+        modernButton.active.background = CreateSolidTexture(new Color(buttonHoverR * 1.2f, buttonHoverG * 1.2f, buttonHoverB * 1.2f, buttonOpacity));
 
         GUIStyle modernLabel = new GUIStyle(GUI.skin.label)
         {
@@ -221,7 +240,17 @@ public class UIManager : MonoBehaviour
                 menu = CurrentMenu.Closed;
             }
 
-            GUI.Label(new Rect(menuX, menuY + 50, 300, 20), $"v{Constants.VersionID}", modernLabel);
+            if (GUI.Button(new Rect(menuX, menuY + 50, 300, 20), "Better MonkeFrames Github", modernButton))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "https://github.com/OddsJuix/MonkeFrames-better-UI",
+                    UseShellExecute = true
+                });
+                menu = CurrentMenu.Closed;
+            }
+
+            GUI.Label(new Rect(menuX, menuY + 75, 300, 20), $"v{Constants.VersionID}", modernLabel);
         }
 
         if (menu is CurrentMenu.F2 or CurrentMenu.F2LoadMenu)
@@ -394,24 +423,70 @@ public class UIManager : MonoBehaviour
         if (menu == CurrentMenu.F6)
         {
             const float start = 550f;
+            float yPos = 20f;
 
-            GUI.Label(new Rect(start, 20, 100, 20), "Text Color R:", modernLabel);
-            textColorR = GUI.HorizontalSlider(new Rect(start + 100, 20, 100, 20), textColorR, 0f, 1f);
+            GUI.Label(new Rect(start, yPos, 150, 20), "Text Color R:", modernLabel);
+            textColorR = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), textColorR, 0f, 1f);
+            yPos += 25;
 
-            GUI.Label(new Rect(start, 40, 100, 20), "Text Color G:", modernLabel);
-            textColorG = GUI.HorizontalSlider(new Rect(start + 100, 40, 100, 20), textColorG, 0f, 1f);
+            GUI.Label(new Rect(start, yPos, 150, 20), "Text Color G:", modernLabel);
+            textColorG = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), textColorG, 0f, 1f);
+            yPos += 25;
 
-            GUI.Label(new Rect(start, 60, 100, 20), "Text Color B:", modernLabel);
-            textColorB = GUI.HorizontalSlider(new Rect(start + 100, 60, 100, 20), textColorB, 0f, 1f);
+            GUI.Label(new Rect(start, yPos, 150, 20), "Text Color B:", modernLabel);
+            textColorB = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), textColorB, 0f, 1f);
+            yPos += 25;
 
-            GUI.Label(new Rect(start, 80, 100, 20), "Button Roundness:", modernLabel);
-            buttonRoundness = GUI.HorizontalSlider(new Rect(start + 100, 80, 100, 20), buttonRoundness, 0f, 10f);
+            GUI.Label(new Rect(start, yPos, 150, 20), "Button Color R:", modernLabel);
+            buttonColorR = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), buttonColorR, 0f, 1f);
+            yPos += 25;
 
-            if (GUI.Button(new Rect(start, 100, 200, 20), "Save Settings", modernButton))
+            GUI.Label(new Rect(start, yPos, 150, 20), "Button Color G:", modernLabel);
+            buttonColorG = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), buttonColorG, 0f, 1f);
+            yPos += 25;
+
+            GUI.Label(new Rect(start, yPos, 150, 20), "Button Color B:", modernLabel);
+            buttonColorB = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), buttonColorB, 0f, 1f);
+            yPos += 25;
+
+            GUI.Label(new Rect(start, yPos, 150, 20), "Button Hover R:", modernLabel);
+            buttonHoverR = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), buttonHoverR, 0f, 1f);
+            yPos += 25;
+
+            GUI.Label(new Rect(start, yPos, 150, 20), "Button Hover G:", modernLabel);
+            buttonHoverG = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), buttonHoverG, 0f, 1f);
+            yPos += 25;
+
+            GUI.Label(new Rect(start, yPos, 150, 20), "Button Hover B:", modernLabel);
+            buttonHoverB = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), buttonHoverB, 0f, 1f);
+            yPos += 25;
+
+            GUI.Label(new Rect(start, yPos, 150, 20), "Button Opacity:", modernLabel);
+            buttonOpacity = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), buttonOpacity, 0f, 1f);
+            yPos += 25;
+
+            GUI.Label(new Rect(start, yPos, 150, 20), "Button Font Size:", modernLabel);
+            buttonFontSize = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), buttonFontSize, 8f, 18f);
+            yPos += 25;
+
+            GUI.Label(new Rect(start, yPos, 150, 20), "Button Border:", modernLabel);
+            buttonBorder = GUI.HorizontalSlider(new Rect(start + 120, yPos, 80, 20), buttonBorder, 0f, 10f);
+            yPos += 25;
+
+            if (GUI.Button(new Rect(start, yPos, 200, 20), "Save Settings", modernButton))
             {
                 PlayerPrefs.SetFloat("MonkeFrames_TextColorR", textColorR);
                 PlayerPrefs.SetFloat("MonkeFrames_TextColorG", textColorG);
                 PlayerPrefs.SetFloat("MonkeFrames_TextColorB", textColorB);
+                PlayerPrefs.SetFloat("MonkeFrames_ButtonColorR", buttonColorR);
+                PlayerPrefs.SetFloat("MonkeFrames_ButtonColorG", buttonColorG);
+                PlayerPrefs.SetFloat("MonkeFrames_ButtonColorB", buttonColorB);
+                PlayerPrefs.SetFloat("MonkeFrames_ButtonHoverR", buttonHoverR);
+                PlayerPrefs.SetFloat("MonkeFrames_ButtonHoverG", buttonHoverG);
+                PlayerPrefs.SetFloat("MonkeFrames_ButtonHoverB", buttonHoverB);
+                PlayerPrefs.SetFloat("MonkeFrames_ButtonOpacity", buttonOpacity);
+                PlayerPrefs.SetFloat("MonkeFrames_ButtonFontSize", buttonFontSize);
+                PlayerPrefs.SetFloat("MonkeFrames_ButtonBorder", buttonBorder);
                 PlayerPrefs.SetFloat("MonkeFrames_ButtonRoundness", buttonRoundness);
                 PlayerPrefs.Save();
                 menu = CurrentMenu.Closed;
